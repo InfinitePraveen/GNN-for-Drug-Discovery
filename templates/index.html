@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GNN for Drug Discovery</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">GRAPH NEURAL NETWORK • MOLECULAR PROPERTY PREDICTION</p>
+            <h1>GNN for Drug Discovery</h1>
+            <p class="intro">
+                Enter a molecule as a SMILES string. The app converts the chemical structure
+                into a molecular graph and uses a trained GCN to estimate aqueous solubility.
+            </p>
+        </section>
+
+        <section class="card">
+            <form method="post">
+                <label for="smiles">SMILES string</label>
+                <input id="smiles" name="smiles" value="{{ smiles }}" placeholder="Example: CCO" required>
+                <button type="submit">Predict Solubility</button>
+            </form>
+
+            <p class="examples">
+                Try:
+                <code>CCO</code>
+                <code>CC(=O)O</code>
+                <code>c1ccccc1</code>
+            </p>
+        </section>
+
+        {% if prediction is not none %}
+        <section class="result card">
+            <p class="eyebrow">MODEL OUTPUT</p>
+            <h2>{{ "%.3f"|format(prediction) }}</h2>
+            <p>Predicted log solubility in mol/L</p>
+
+            {% if details %}
+            <div class="stats">
+                <div><strong>{{ details.atoms }}</strong><span>Atoms</span></div>
+                <div><strong>{{ details.bonds }}</strong><span>Bonds</span></div>
+                <div><strong>{{ details.molecular_weight }}</strong><span>Molecular weight</span></div>
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        {% if error %}
+        <section class="notice card">
+            <strong>Setup / input message</strong>
+            <p>{{ error }}</p>
+        </section>
+        {% endif %}
+
+        <section class="card explanation">
+            <h2>How it works</h2>
+            <ol>
+                <li>RDKit parses the SMILES string.</li>
+                <li>Atoms become graph nodes and bonds become graph edges.</li>
+                <li>A two-layer PyTorch Geometric GCN learns molecular representations.</li>
+                <li>Global pooling creates one vector for the molecule.</li>
+                <li>A small regression head predicts log aqueous solubility.</li>
+            </ol>
+        </section>
+
+        <footer>
+            <span>Built as a lightweight Data Science portfolio project.</span>
+            <span>
+                <a href="https://github.com/InfinitePraveen" target="_blank" rel="noreferrer">GitHub</a>
+                ·
+                <a href="https://www.linkedin.com/in/infinitepraveen/" target="_blank" rel="noreferrer">LinkedIn</a>
+            </span>
+        </footer>
+    </main>
+</body>
+</html>
